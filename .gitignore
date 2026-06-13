@@ -1,0 +1,397 @@
+# Creado por https://www.toptal.com/developers/gitignore/api/macos,windows,node,visualstudiocode,python
+# Editar en https://www.toptal.com/developers/gitignore?templates=macos,windows,node,visualstudiocode,python
+
+### macOS ###
+# General
+.DS_Store
+.ManzanaDoble
+.LSOverride
+
+# El icono debe terminar con dos \r
+Icono
+
+
+# Miniaturas
+._*
+
+# Archivos que podrían aparecer en la raíz de un volumen
+.RevisionesDocumento-V100
+.fseventsd
+Foco V100
+.ElementosTemporales
+Basura
+.VolumeIcon.icns
+.com.apple.timemachine.nopresentar
+
+# Directorios potencialmente creados en el recurso compartido remoto de AFP
+.AppleDB
+.AppleDesktop
+Carpeta de papelera de red
+Artículos temporales
+.apdisk
+
+### Parche para macOS ###
+# Archivos generados por iCloud
+*.icloud
+
+### Nodo ###
+# Registros
+registros
+*.registro
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# Informes de diagnóstico (https://nodejs.org/api/report.html)
+informe.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Datos de tiempo de ejecución
+pids
+*.pid
+*.semilla
+*.pid.lock
+
+# Directorio para las bibliotecas instrumentadas generadas por jscoverage/JSCover
+lib-cov
+
+# Directorio de cobertura utilizado por herramientas como Istanbul
+cobertura
+*.lcov
+
+# cobertura de pruebas en Nueva York
+.nyc_output
+
+# Almacenamiento intermedio de Grunt (https://gruntjs.com/creating-plugins#storing-task-files)
+.gruñido
+
+# Directorio de dependencias de Bower (https://bower.io/)
+componentes_bower
+
+# Configuración de node-waf
+.lock-wscript
+
+# Complementos binarios compilados (https://nodejs.org/api/addons.html)
+compilación/lanzamiento
+
+# Directorios de dependencias
+node_modules/
+jspm_packages/
+
+# Directorio de dependencias de Snowpack (https://snowpack.dev/)
+módulos_web/
+
+# Caché de TypeScript
+*.tsbuildinfo
+
+# Directorio de caché de npm opcional
+.npm
+
+# Caché de eslint opcional
+.eslintcache
+
+# Caché de stylelint opcional
+.stylelintcache
+
+# Caché de micropaquetes
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Historial REPL opcional
+.node_repl_history
+
+# Salida de 'npm pack'
+*.tgz
+
+# Archivo de integridad del hilo
+.integridad-del-hilo
+
+# Archivos de variables de entorno de dotenv
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# caché de parcel-bundler (https://parceljs.org/)
+.cache
+.caché-parcela
+
+# Salida de compilación de Next.js
+.próximo
+afuera
+
+# Nuxt.js compila / genera salida
+.nuxt
+distrito
+
+# Archivos de Gatsby
+.cache/
+# Comenta en la línea pública si tu proyecto usa Gatsby y no Next.js
+# https://nextjs.org/blog/next-9-1#public-directory-support
+# público
+
+# Salida de compilación de vuepress
+.vuepress/dist
+
+# Directorio temporal y de caché de VuePress v2.x
+.temperatura
+
+# Caché de Docusaurus y archivos generados
+.docusaurus
+
+# Directorios sin servidor
+.sin servidor/
+
+# Caché de la caja de fusibles
+.caja de fusibles/
+
+# Archivos locales de DynamoDB
+.dynamodb/
+
+# Archivo de puerto de TernJS
+Puerto .tern
+
+# Almacena las versiones de VSCode utilizadas para probar las extensiones de VSCode.
+.vscode-test
+
+# yarn v2
+.yarn/caché
+.hilo/desconectado
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+### Parche de nodo ###
+# Directorios Webpack sin servidor
+.webpack/
+
+# Caché de stylelint opcional
+
+# SvelteKit compila / genera salida
+.svelte-kit
+
+### Python ###
+# Archivos DLL compilados en bytes / optimizados
+__pycache__/
+*.py[código]
+*$py.class
+
+# Extensiones de C
+*.entonces
+
+# Distribución / embalaje
+.Pitón
+construir/
+desarrollar huevos/
+distribución/
+descargas/
+huevos/
+.huevos/
+biblioteca/
+lib64/
+regiones/
+sdist/
+var/
+ruedas/
+compartir/python-wheels/
+*.egg-info/
+.installed.cfg
+*.huevo
+MANIFIESTO
+
+# PyInstaller
+# Normalmente, estos archivos se escriben mediante un script de Python a partir de una plantilla.
+# antes de que PyInstaller compile el ejecutable, para inyectarle información de fecha u otra.
+*.manifiesto
+*.especulación
+
+# Registros del instalador
+pip-log.txt
+pip-eliminar-este-directorio.txt
+
+# Informes de pruebas unitarias/cobertura
+htmlcov/
+.tox/
+.nox/
+.cobertura
+.cobertura.*
+pruebas de nariz.xml
+cobertura.xml
+*.cubrir
+*.py,cover
+.hipótesis/
+.pytest_cache/
+cubrir/
+
+# Traducciones
+*.mes
+*.olla
+
+# Cosas de Django:
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Cosas de Flask:
+instancia/
+.webassets-cache
+
+# Cosas de Scrapy:
+.scrapy
+
+# Documentación de Sphinx
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+objetivo/
+
+# Cuaderno Jupyter
+.ipynb_checkpoints
+
+# IPython
+perfil_predeterminado/
+ipython_config.py
+
+# pyenv
+# Para una biblioteca o paquete, es posible que desee ignorar estos archivos ya que el código es
+# Diseñado para ejecutarse en múltiples entornos; de lo contrario, consúltelos en:
+# .python-version
+
+# pipenv
+# Según pypa/pipenv#598, se recomienda incluir Pipfile.lock en el control de versiones.
+# Sin embargo, en caso de colaboración, si existen dependencias específicas de la plataforma o dependencias
+# Al no tener soporte multiplataforma, pipenv puede instalar dependencias que no funcionan o no funcionan.
+# Instalar todas las dependencias necesarias.
+#Pipfile.lock
+
+# poesía
+# Al igual que con Pipfile.lock, generalmente se recomienda incluir poetry.lock en el control de versiones.
+# Esto se recomienda especialmente para paquetes binarios para garantizar la reproducibilidad y es más
+# comúnmente ignorado para bibliotecas.
+# https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+#poesía.bloqueo
+
+# pdm
+# Al igual que con Pipfile.lock, generalmente se recomienda incluir pdm.lock en el control de versiones.
+#pdm.lock
+# pdm almacena las configuraciones de todo el proyecto en .pdm.toml, pero se recomienda no incluirlo.
+# en control de versiones.
+# https://pdm.fming.dev/#use-with-ide
+.pdm.toml
+
+# PEP 582; utilizado por ejemplo en github.com/David-OConnor/pyflow y github.com/pdm-project/pdm
+__pypackages__/
+
+# Cosas de apio
+Horario de celerybeat
+acelerybeat.pid
+
+# Archivos analizados por SageMath
+*.sage.py
+
+# Entornos
+.venv
+entorno/
+venv/
+ENTORNO/
+env.bak/
+venv.bak/
+
+# Configuración del proyecto Spyder
+Proyecto .spyder
+Proyecto espía
+
+# Configuración del proyecto de cuerda
+Proyecto de cuerda
+
+# Documentación de mkdocs
+/sitio
+
+# mipy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Comprobador de tipos de Pyre
+.pira/
+
+# analizador de tipos estático pytype
+.pytype/
+
+# Símbolos de depuración de Cython
+cython_debug/
+
+# PyCharm
+# La plantilla específica de JetBrains se mantiene en un archivo JetBrains.gitignore separado que puede
+# Se puede encontrar en https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+# y se puede agregar al gitignore global o fusionarse en este archivo. Para una solución más radical
+# opción (no recomendada) puede descomentar lo siguiente para ignorar toda la carpeta de ideas.
+#.idea/
+
+### Parche de Python ###
+# Archivo de configuración local de Poetry - https://python-poetry.org/docs/configuration/#local-configuration
+poesía.toml
+
+# ruff
+.ruff_cache/
+
+# Archivos de configuración de LSP
+pyrightconfig.json
+
+### Código de Visual Studio ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Historial local para Visual Studio Code
+.historia/
+
+# Extensiones de Visual Studio Code creadas
+*.vsix
+
+### Parche de VisualStudioCode ###
+# Ignorar todo el historial local de archivos
+.historia
+iónido
+
+### Windows ###
+# Archivos de caché de miniaturas de Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Archivo de volcado
+*.stackdump
+
+# Archivo de configuración de la carpeta
+[Dd]esktop.ini
+
+# Papelera de reciclaje utilizada en recursos compartidos de archivos
+$RECICLAJE.CONTENEDOR/
+
+# Archivos del instalador de Windows
+*.taxi
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Accesos directos de Windows
+*.lnk
+
+# Fin de https://www.toptal.com/developers/gitignore/api/macos,windows,node,visualstudiocode,python
+
+# Custom exclusions for Fraud Detection project
+fraud-detection/data/creditcard.csv
+*.pkl
+*.pkl.lock
+*.pickle
