@@ -1,17 +1,15 @@
 import os
 import json
 import random
-import pandas as pd
-import numpy as np
+import math
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Dict, Any, List
-import joblib
 
 app = FastAPI(
     title="API de Detección de Fraude",
-    description="Backend para predecir fraudes en transacciones utilizando XGBoost",
+    description="Backend para predecir fraudes en transacciones utilizando XGBoost (Inferencia de puro Python)",
     version="1.0.0"
 )
 
@@ -26,37 +24,38 @@ app.add_middleware(
 
 # Load model, scaler, features, metrics, and samples
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_PATH = os.path.join(BASE_DIR, "model.pkl")
-SCALER_PATH = os.path.join(BASE_DIR, "scaler.pkl")
-FEATURES_PATH = os.path.join(BASE_DIR, "feature_names.pkl")
+MODEL_JSON_PATH = os.path.join(BASE_DIR, "model.json")
+SCALER_JSON_PATH = os.path.join(BASE_DIR, "scaler_params.json")
 METRICS_PATH = os.path.join(BASE_DIR, "metrics.json")
 SAMPLES_PATH = os.path.join(BASE_DIR, "sample_transactions.json")
 
-model = None
-scaler = None
+model_data = None
+scaler_params = None
 feature_names = []
 metrics_data = {}
 samples_data = []
 
 @app.on_event("startup")
 def load_artifacts():
-    global model, scaler, feature_names, metrics_data, samples_data
+    global model_data, scaler_params, feature_names, metrics_data, samples_data
     try:
-        if os.path.exists(MODEL_PATH):
-            model = joblib.load(MODEL_PATH)
-        if os.path.exists(SCALER_PATH):
-            scaler = joblib.load(SCALER_PATH)
-        if os.path.exists(FEATURES_PATH):
-            feature_names = joblib.load(FEATURES_PATH)
+        if os.path.exists(MODEL_JSON_PATH):
+            with open(MODEL_JSON_PATH, "r") as f:
+                model_data = json.load(f)
+            if model_data and "learner" in model_data:
+                feature_names = model_data["learner"].get("feature_names", [])
+        if os.path.exists(SCALER_JSON_PATH):
+            with open(SCALER_JSON_PATH, "r") as f:
+                scaler_params = json.load(f)
         if os.path.exists(METRICS_PATH):
             with open(METRICS_PATH, "r") as f:
                 metrics_data = json.load(f)
         if os.path.exists(SAMPLES_PATH):
             with open(SAMPLES_PATH, "r") as f:
                 samples_data = json.load(f)
-        print("Backend artifacts loaded successfully.")
+        print("Backend JSON artifacts loaded successfully.")
     except Exception as e:
-        print(f"Error loading artifacts: {e}")
+        print(f"Error loading JSON artifacts: {e}")
 
 class TransactionInput(BaseModel):
     Time: float = Field(..., description="Segundos transcurridos desde la primera transacción")
@@ -92,34 +91,27 @@ class TransactionInput(BaseModel):
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "model_loaded": model is not None}
+    return {"status": "ok", "model_loaded": model_data is not None}
 
 @app.get("/api/metrics")
 def get_metrics():
     if not metrics_data:
-        # Load from file if not loaded at startup
         if os.path.exists(METRICS_PATH):
             with open(METRICS_PATH, "r") as f:
                 return json.load(f)
-        raise HTTPException(status_code=404, detail="Métricas no encontradas. Ejecuta train_model.py primero.")
+        raise HTTPException(status_code=404, detail="Métricas no encontradas.")
     return metrics_data
 
 @app.get("/api/simulate")
 def simulate_transaction(class_type: int = None):
-    """
-    Retorna una transacción aleatoria de muestra.
-    class_type: 0 para normales, 1 para fraudes. Si es None, retorna cualquiera.
-    """
     global samples_data
     if not samples_data:
-        # Intenta cargar de nuevo
         if os.path.exists(SAMPLES_PATH):
             with open(SAMPLES_PATH, "r") as f:
                 samples_data = json.load(f)
         else:
-            raise HTTPException(status_code=404, detail="Muestras no encontradas. Ejecuta train_model.py primero.")
+            raise HTTPException(status_code=404, detail="Muestras no encontradas.")
 
-    
     if class_type is not None:
         filtered = [s for s in samples_data if int(s.get("Class", 0)) == class_type]
     else:
@@ -130,68 +122,95 @@ def simulate_transaction(class_type: int = None):
         
     return random.choice(filtered)
 
+def predict_xgboost_pure_python(tx_dict_scaled: dict) -> float:
+    x = [tx_dict_scaled.get(name, 0.0) for name in feature_names]
+    trees = model_data["learner"]["gradient_booster"]["model"]["trees"]
+    
+    margin = 0.0
+    for tree in trees:
+        node = 0
+        while True:
+            left = tree["left_children"][node]
+            right = tree["right_children"][node]
+            
+            # Leaf node
+            if left == -1 and right == -1:
+                margin += tree["split_conditions"][node]
+                break
+                
+            split_idx = tree["split_indices"][node]
+            split_val = tree["split_conditions"][node]
+            default_left = tree["default_left"][node]
+            
+            val = x[split_idx]
+            
+            if val is None:
+                if default_left:
+                    node = left
+                else:
+                    node = right
+            elif val < split_val:
+                node = left
+            else:
+                node = right
+                
+    # Sigmoid function
+    prob = 1.0 / (1.0 + math.exp(-margin))
+    return prob
+
 @app.post("/api/predict")
 def predict_transaction(tx: TransactionInput):
-    global model, scaler, feature_names
-    if model is None or scaler is None:
-        # Intenta cargar de nuevo
+    global model_data, scaler_params, feature_names, metrics_data
+    if model_data is None or scaler_params is None:
         load_artifacts()
-        if model is None or scaler is None:
-            raise HTTPException(status_code=503, detail="Modelo o escalador no cargados. Por favor entrena el modelo.")
+        if model_data is None or scaler_params is None:
+            raise HTTPException(status_code=503, detail="Modelo o configuraciones de escalado no cargados.")
             
-    # Convert request to dict
     tx_dict = tx.dict()
     
-    # Scale Time and Amount (as done during training)
-    # Scaler was fit on a DataFrame with [['Time', 'Amount']]
+    # Scale Time and Amount
     try:
-        scaled_vals = scaler.transform(pd.DataFrame([[tx_dict['Time'], tx_dict['Amount']]], columns=['Time', 'Amount']))
+        mean_time = scaler_params["mean"][0]
+        scale_time = scaler_params["scale"][0]
+        mean_amount = scaler_params["mean"][1]
+        scale_amount = scaler_params["scale"][1]
+        
         tx_dict_scaled = tx_dict.copy()
-        tx_dict_scaled['Time'] = scaled_vals[0][0]
-        tx_dict_scaled['Amount'] = scaled_vals[0][1]
+        tx_dict_scaled["Time"] = (tx_dict["Time"] - mean_time) / scale_time
+        tx_dict_scaled["Amount"] = (tx_dict["Amount"] - mean_amount) / scale_amount
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error al escalar variables: {str(e)}")
         
-    # Reorder features to match feature_names
-    ordered_features = []
-    for col in feature_names:
-        ordered_features.append(tx_dict_scaled[col])
+    # Predict using pure Python
+    try:
+        probability = predict_xgboost_pure_python(tx_dict_scaled)
+        prediction = 1 if probability > 0.5 else 0
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error en la predicción del modelo: {str(e)}")
         
-    # Predict
-    input_arr = np.array([ordered_features])
-    prediction = int(model.predict(input_arr)[0])
-    probability = float(model.predict_proba(input_arr)[0][1])
-    
     # Feature Impact analysis
-    # Let's see which feature contributed most to the prediction.
-    # We will use the model's feature_importances_ and the feature values.
-    # For a simple explainability: impact = feature_val * feature_importance
-    importances = model.feature_importances_
+    importances = metrics_data.get("feature_importances", {})
     features_impact = []
     
-    # Normalize features roughly to compare impacts
-    for i, name in enumerate(feature_names):
+    for name in feature_names:
         val = tx_dict_scaled[name]
-        imp = importances[i]
-        # Impact is high if the value is far from 0 (since V1-V28 are PCA centered around 0)
-        # And if it aligns with the correlation direction
+        imp = importances.get(name, 0.0)
         impact_val = val * imp
         features_impact.append({
             "name": name,
-            "value": float(tx_dict[name]), # original value
+            "value": float(tx_dict[name]),
             "scaled_value": float(val),
             "importance": float(imp),
             "impact": float(impact_val)
         })
         
-    # Sort by absolute impact
     features_impact = sorted(features_impact, key=lambda x: abs(x['impact']), reverse=True)
     
     return {
         "prediction": prediction,
         "probability": probability,
         "is_fraud": prediction == 1,
-        "top_features": features_impact[:10]  # Return top 10 most impactful features for explanation
+        "top_features": features_impact[:10]
     }
 
 if __name__ == "__main__":
