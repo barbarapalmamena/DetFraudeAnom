@@ -226,7 +226,7 @@ export default function Home() {
 
       {/* Header */}
       <header className="border-b border-[#7F77DD]/10 bg-[#16161A]/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-3">
             <div className="relative p-3 bg-[#2C2C2A] border border-[#7F77DD]/20 rounded-2xl text-[#7F77DD] shadow-[0_0_20px_rgba(127,119,221,0.1)]">
               <ShieldAlert className="w-6 h-6 animate-pulse" />
@@ -269,7 +269,7 @@ export default function Home() {
       </header>
 
       {/* Main Grid */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8 relative">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 relative">
         
         {error && (
           <div className="mb-6 p-4 bg-red-950/40 border border-red-500/30 rounded-2xl text-red-300 flex items-start gap-3 shadow-[0_4px_20px_rgba(239,68,68,0.05)]">
@@ -289,7 +289,7 @@ export default function Home() {
             <div className="lg:col-span-5 space-y-6">
               
               {/* Premium Credit Card Mockup */}
-              <div className="relative h-60 w-full rounded-3xl overflow-hidden border border-white/5 shadow-2xl p-6 flex flex-col justify-between transition-all duration-500 bg-gradient-to-br from-[#2C2C2A] to-[#1e1e1d] hover:shadow-[#7F77DD]/5 hover:border-[#7F77DD]/20">
+              <div className="relative min-h-[14rem] h-auto w-full rounded-3xl overflow-hidden border border-white/5 shadow-2xl p-5 sm:p-6 flex flex-col justify-between transition-all duration-500 bg-gradient-to-br from-[#2C2C2A] to-[#1e1e1d] hover:shadow-[#7F77DD]/5 hover:border-[#7F77DD]/20">
                 {prediction ? (
                   prediction.is_fraud ? (
                     <div className="absolute inset-0 bg-red-600/10 blur-xl opacity-60 pointer-events-none transition-all duration-500" />
@@ -341,7 +341,7 @@ export default function Home() {
                   </div>
                   <div className="text-right">
                     <span className="text-[8px] uppercase tracking-widest text-[#AFA9EC]/40 font-mono">Monto de Transacción</span>
-                    <p className="text-2xl font-mono font-black text-[#F0EFFF]">${(transaction.Amount ?? 0).toFixed(2)}</p>
+                    <p className="text-xl sm:text-2xl font-mono font-black text-[#F0EFFF]">${(transaction.Amount ?? 0).toFixed(2)}</p>
                   </div>
                 </div>
               </div>
@@ -577,7 +577,7 @@ export default function Home() {
                         </div>
                       );
                     })}
-                    <div className="flex justify-between text-[9px] text-[#AFA9EC]/70 border-t border-[#7F77DD]/10 pt-3 px-12">
+                    <div className="flex justify-between text-[9px] text-[#AFA9EC]/70 border-t border-[#7F77DD]/10 pt-3 px-2 sm:px-12">
                       <span className="text-emerald-400 flex items-center gap-1">← Reduce Riesgo (Normalizar)</span>
                       <span className="text-red-400 flex items-center gap-1">Aumenta Riesgo (Anomalía) →</span>
                     </div>
@@ -655,75 +655,140 @@ export default function Home() {
                   <p className="text-[10px] text-[#AFA9EC]/60">Evalúa una transacción en el simulador para que aparezca aquí automáticamente.</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
-                    <thead>
-                      <tr className="border-b border-[#7F77DD]/10 text-[#AFA9EC] uppercase tracking-wider text-[10px] font-mono">
-                        <th className="pb-3 font-semibold">ID Transacción</th>
-                        <th className="pb-3 font-semibold">Hora / Timestamp</th>
-                        <th className="pb-3 font-semibold">Número Tarjeta</th>
-                        <th className="pb-3 font-semibold text-right">Monto</th>
-                        <th className="pb-3 font-semibold text-center">Score de Riesgo</th>
-                        <th className="pb-3 font-semibold text-center">Estado</th>
-                        <th className="pb-3 font-semibold pl-4">Acción / Resolución</th>
-                        <th className="pb-3 font-semibold text-right">Acciones manuales</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#7F77DD]/5 font-mono">
-                      {alertLogs.map((log) => (
-                        <tr key={log.id} className="hover:bg-[#16161A]/20 transition-colors">
-                          <td className="py-4 font-bold text-[#F0EFFF]">{log.id}</td>
-                          <td className="py-4 text-[#F0EFFF]/70">{log.time}</td>
-                          <td className="py-4 text-[#F0EFFF]/60">{log.card}</td>
-                          <td className="py-4 text-right font-bold text-[#F0EFFF]">${log.amount.toFixed(2)}</td>
-                          <td className="py-4 text-center">
-                            <span className={`font-bold ${log.risk > 0.5 ? 'text-red-400' : log.risk > 0.15 ? 'text-amber-400' : 'text-emerald-400'}`}>
-                              {(log.risk * 100).toFixed(2)}%
-                            </span>
-                          </td>
-                          <td className="py-4 text-center">
-                            <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                              log.status === 'BLOCKED' ? 'bg-red-500/15 text-red-400 border border-red-500/20' :
-                              log.status === 'REVIEW' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' :
-                              'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
-                            }`}>
-                              {log.status === 'BLOCKED' ? 'BLOQUEADA' : log.status === 'REVIEW' ? 'EN REVISIÓN' : 'APROBADA'}
-                            </span>
-                          </td>
-                          <td className="py-4 pl-4 text-[#AFA9EC] italic text-[11px] font-sans">{log.actionTaken}</td>
-                          <td className="py-4 text-right">
+                <div className="space-y-6">
+                  {/* Desktop view: Table */}
+                  <div className="hidden md:block overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead>
+                        <tr className="border-b border-[#7F77DD]/10 text-[#AFA9EC] uppercase tracking-wider text-[10px] font-mono">
+                          <th className="pb-3 font-semibold">ID Transacción</th>
+                          <th className="pb-3 font-semibold">Hora / Timestamp</th>
+                          <th className="pb-3 font-semibold">Número Tarjeta</th>
+                          <th className="pb-3 font-semibold text-right">Monto</th>
+                          <th className="pb-3 font-semibold text-center">Score de Riesgo</th>
+                          <th className="pb-3 font-semibold text-center">Estado</th>
+                          <th className="pb-3 font-semibold pl-4">Acción / Resolución</th>
+                          <th className="pb-3 font-semibold text-right">Acciones manuales</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#7F77DD]/5 font-mono">
+                        {alertLogs.map((log) => (
+                          <tr key={log.id} className="hover:bg-[#16161A]/20 transition-colors">
+                            <td className="py-4 font-bold text-[#F0EFFF]">{log.id}</td>
+                            <td className="py-4 text-[#F0EFFF]/70">{log.time}</td>
+                            <td className="py-4 text-[#F0EFFF]/60">{log.card}</td>
+                            <td className="py-4 text-right font-bold text-[#F0EFFF]">${log.amount.toFixed(2)}</td>
+                            <td className="py-4 text-center">
+                              <span className={`font-bold ${log.risk > 0.5 ? 'text-red-400' : log.risk > 0.15 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                                {(log.risk * 100).toFixed(2)}%
+                              </span>
+                            </td>
+                            <td className="py-4 text-center">
+                              <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                                log.status === 'BLOCKED' ? 'bg-red-500/15 text-red-400 border border-red-500/20' :
+                                log.status === 'REVIEW' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' :
+                                'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                              }`}>
+                                {log.status === 'BLOCKED' ? 'BLOQUEADA' : log.status === 'REVIEW' ? 'EN REVISIÓN' : 'APROBADA'}
+                              </span>
+                            </td>
+                            <td className="py-4 pl-4 text-[#AFA9EC] italic text-[11px] font-sans">{log.actionTaken}</td>
+                            <td className="py-4 text-right">
+                              {log.status === 'REVIEW' ? (
+                                <div className="flex justify-end gap-1.5">
+                                  <button 
+                                    onClick={() => handleResolveAlert(log.id, 'Liberada tras verificación manual')}
+                                    title="Aprobar Transacción"
+                                    className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-lg transition-all"
+                                  >
+                                    <Check className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button 
+                                    onClick={() => handleResolveAlert(log.id, 'Bloqueo definitivo de cuenta')}
+                                    title="Confirmar Fraude"
+                                    className="p-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-lg transition-all"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              ) : log.status === 'BLOCKED' ? (
+                                <button 
+                                  onClick={() => handleResolveAlert(log.id, 'Liberada y cuenta desbloqueada')}
+                                  className="px-2 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-lg text-[9px] font-bold uppercase transition-all"
+                                >
+                                  Desbloquear
+                                </button>
+                              ) : (
+                                <span className="text-[10px] text-[#F0EFFF]/35">—</span>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Mobile view: Cards list */}
+                  <div className="grid grid-cols-1 gap-4 md:hidden">
+                    {alertLogs.map((log) => (
+                      <div key={log.id} className="bg-[#16161A]/40 border border-[#7F77DD]/10 rounded-2xl p-4 space-y-3 font-mono text-xs">
+                        <div className="flex justify-between items-center">
+                          <span className="font-bold text-[#F0EFFF]">{log.id}</span>
+                          <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                            log.status === 'BLOCKED' ? 'bg-red-500/15 text-red-400 border border-red-500/20' :
+                            log.status === 'REVIEW' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' :
+                            'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
+                          }`}>
+                            {log.status === 'BLOCKED' ? 'BLOQUEADA' : log.status === 'REVIEW' ? 'EN REVISIÓN' : 'APROBADA'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-[10px] text-[#F0EFFF]/60">
+                          <span>{log.time}</span>
+                          <span>{log.card}</span>
+                        </div>
+                        <div className="border-t border-[#7F77DD]/5 pt-2 flex justify-between items-center">
+                          <span className="text-[#AFA9EC]">Monto:</span>
+                          <span className="font-bold text-[#F0EFFF]">${log.amount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-[#AFA9EC]">Riesgo:</span>
+                          <span className={`font-bold ${log.risk > 0.5 ? 'text-red-400' : log.risk > 0.15 ? 'text-amber-400' : 'text-emerald-400'}`}>
+                            {(log.risk * 100).toFixed(2)}%
+                          </span>
+                        </div>
+                        <div className="text-[#AFA9EC] italic text-[11px] font-sans pt-1 border-t border-[#7F77DD]/5">
+                          {log.actionTaken}
+                        </div>
+                        {log.status !== 'SAFE' && (
+                          <div className="pt-2 border-t border-[#7F77DD]/5 flex gap-2">
                             {log.status === 'REVIEW' ? (
-                              <div className="flex justify-end gap-1.5">
+                              <>
                                 <button 
                                   onClick={() => handleResolveAlert(log.id, 'Liberada tras verificación manual')}
-                                  title="Aprobar Transacción"
-                                  className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-lg transition-all"
+                                  className="flex-1 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1"
                                 >
-                                  <Check className="w-3.5 h-3.5" />
+                                  <Check className="w-3.5 h-3.5" /> Aprobar
                                 </button>
                                 <button 
                                   onClick={() => handleResolveAlert(log.id, 'Bloqueo definitivo de cuenta')}
-                                  title="Confirmar Fraude"
-                                  className="p-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-lg transition-all"
+                                  className="flex-1 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1"
                                 >
-                                  <X className="w-3.5 h-3.5" />
+                                  <X className="w-3.5 h-3.5" /> Rechazar
                                 </button>
-                              </div>
-                            ) : log.status === 'BLOCKED' ? (
+                              </>
+                            ) : (
                               <button 
                                 onClick={() => handleResolveAlert(log.id, 'Liberada y cuenta desbloqueada')}
-                                className="px-2 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-lg text-[9px] font-bold uppercase transition-all"
+                                className="w-full py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1"
                               >
                                 Desbloquear
                               </button>
-                            ) : (
-                              <span className="text-[10px] text-[#F0EFFF]/35">—</span>
                             )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
